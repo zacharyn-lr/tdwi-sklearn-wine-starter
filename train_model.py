@@ -2,11 +2,28 @@
 
 from pathlib import Path
 
+import joblib
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
 MODEL_PATH = Path("models/wine_classifier.joblib")
 
 
 def train_and_save_model(X_train, X_test, y_train, y_test, random_state=42):
-    raise NotImplementedError("Implement per SPEC.md")
+    pipeline = Pipeline(
+        [
+            ("scaler", StandardScaler()),
+            (
+                "clf",
+                LogisticRegression(max_iter=1000, random_state=random_state),
+            ),
+        ]
+    )
+    pipeline.fit(X_train, y_train)
+    MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+    joblib.dump(pipeline, MODEL_PATH)
+    return pipeline
 
 
 def main():
